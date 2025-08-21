@@ -40,7 +40,7 @@ class CreateEndpointLambdaCdkStack(Stack):
         # Endpoint role
         self.endpoint_role = iam.Role(
             self,
-            "endpoint-role",
+            "yolo-endpoint-role",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
         )
 
@@ -48,11 +48,10 @@ class CreateEndpointLambdaCdkStack(Stack):
             iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
         )
         self.endpoint_role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonBedrockFullAccess")
+            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess")
         )
-        self.endpoint_role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("AWSLambda_FullAccess")
-        )
+
+        print(self.endpoint_role)
 
         # dependencies_layer = lambda_.LayerVersion(
         #     self, "DependenciesLayer",
@@ -80,7 +79,7 @@ class CreateEndpointLambdaCdkStack(Stack):
             layers=[self.sagemaker_layer],
             environment={
                 "S3_MODEL_BUCKET": "s3://uniben-planogram-training/tranining-model",
-                "MODEL_ROLE": f"",
+                "ENDPOINT_ROLE": f"{self.endpoint_role.role_arn}",
             },
             description="Create Endpoint on Amazon SageMaker",
         )

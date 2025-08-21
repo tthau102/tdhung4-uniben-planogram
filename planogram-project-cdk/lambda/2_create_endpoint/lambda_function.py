@@ -28,7 +28,7 @@ def lambda_handler(event, context):
         model_data=model_data,
         image_uri=pytorch_inference_image,
         # role="arn:aws:iam::151182331915:role/YOLO11SageMakerStack-yolo11notebookAccessRole4FE3B3-EdP6dF8ALap0",
-        role=os.getenv("MODEL_ROLE"),
+        role=os.getenv("ENDPOINT_ROLE"),
         name=model_name,
         sagemaker_session=sagemaker_session,
         env={
