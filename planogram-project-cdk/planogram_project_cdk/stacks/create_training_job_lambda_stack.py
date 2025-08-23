@@ -2,7 +2,6 @@ from aws_cdk import (
     Stack,
     Duration,
     CfnOutput,
-    Tags,
     Size,
     RemovalPolicy,
     aws_lambda as lambda_,
@@ -78,8 +77,6 @@ class CreateTrainingJobLambdaCdkStack(Stack):
             },
             description="Create YOLO11x Training job on Amazon SageMaker",
         )
-
-        Tags.of(self.create_training_job_function).add("project", "planogram")
 
         CfnOutput(
             self,

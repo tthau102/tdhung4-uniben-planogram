@@ -2,7 +2,6 @@ from aws_cdk import (
     Stack,
     Duration,
     CfnOutput,
-    Tags,
     Size,
     RemovalPolicy,
     aws_lambda as lambda_,
@@ -19,7 +18,7 @@ class ExportAnnotationsLambdaCdkStack(Stack):
 
         self.export_annotations_lambda_role = iam.Role(
             self,
-            "export_annotations-lambda-role",
+            "export_annotations_lambda-role",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
@@ -47,8 +46,6 @@ class ExportAnnotationsLambdaCdkStack(Stack):
             },
             description="Export Annotations from Label Studio",
         )
-
-        Tags.of(self.export_annotations_function).add("project", "planogram")
 
         CfnOutput(
             self,

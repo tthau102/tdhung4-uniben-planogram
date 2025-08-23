@@ -1,0 +1,59 @@
+import boto3
+import json
+
+def invoke_claude(shelfResult):
+    # client = boto3.client("bedrock-runtime", region_name="us-east-1")
+    # modelId = "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
+    client = boto3.client("bedrock-runtime", region_name="ap-southeast-1")
+    modelId = "arn:aws:bedrock:ap-southeast-1:151182331915:application-inference-profile/yxyw9vn97ihj"
+
+    with open('1_system_prompt.txt', 'r', encoding='utf-8') as f:
+        system_prompt = f.read()
+    with open('2_instructions.txt', 'r', encoding='utf-8') as f:
+        instructions = f.read()
+    with open('3_last_message.txt', 'r', encoding='utf-8') as f:
+        last_message = f.read()
+
+    instructions = instructions.replace("{shelf_data}", json.dumps(shelfResult, indent=2, ensure_ascii=False))
+
+    system = [
+        {
+            "type": "text",
+            "text": system_prompt,
+        }
+    ]
+
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": instructions,
+                },
+                {
+                    "type": "text",
+                    "text": last_message,
+                },
+            ],
+        },
+    ]
+
+    body = {
+        "anthropic_version": "bedrock-2023-05-31",
+        "system": system,
+        "messages": messages,
+        "max_tokens": 500,
+        "top_p": 0.9,
+        "top_k": 20,
+        "temperature": 0,
+    }
+
+    response = client.invoke_model(modelId=modelId, body=json.dumps(body),contentType="application/json",accept="application/json",)
+    model_response = json.loads(response["body"].read()) 
+    print(model_response)
+    return [model_response["usage"], model_response["content"][0]["text"]]
+
+
+def invoke_nova():
+    return 1

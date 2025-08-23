@@ -2,7 +2,6 @@ from aws_cdk import (
     Stack,
     Duration,
     CfnOutput,
-    Tags,
     Size,
     RemovalPolicy,
     aws_lambda as lambda_,
@@ -18,7 +17,7 @@ class CreateEndpointLambdaCdkStack(Stack):
 
         self.create_endpoint_lambda_role = iam.Role(
             self,
-            "create_endpoint-lambda-role",
+            "create_endpoint_lambda-role",
             assumed_by=iam.ServicePrincipal("lambda.amazonaws.com"),
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
@@ -51,8 +50,6 @@ class CreateEndpointLambdaCdkStack(Stack):
             iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess")
         )
 
-        print(self.endpoint_role)
-
         # dependencies_layer = lambda_.LayerVersion(
         #     self, "DependenciesLayer",
         #     code=lambda_.Code.from_asset("layers/dependencies"),
@@ -83,8 +80,6 @@ class CreateEndpointLambdaCdkStack(Stack):
             },
             description="Create Endpoint on Amazon SageMaker",
         )
-
-        Tags.of(self.create_endpoint_function).add("project", "planogram")
 
         CfnOutput(
             self,

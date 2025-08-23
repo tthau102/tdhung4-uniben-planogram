@@ -1,0 +1,13 @@
+Present your analysis in the following JSON format, no further explanation:
+
+<output_format>
+{
+  "refrigerator_analysis": {
+    "target_image_met": <boolean>,
+    "need_review": <boolean>,
+    "review_comment": <string - comment explaining why need_review or leave blank if no review is needed>
+  }
+}
+</output_format>
+
+IMPORTANT! You need to give me the response in Vietnamese.

@@ -1,0 +1,36 @@
+<description>
+{shelf_data}
+</description>
+
+<task_description>
+    Based on **description**,Compare with **criteria** and provide detailed report in JSON format. The report should include following components. Think step by step:
+</task_description>
+
+<criteria>
+- 
+- Compare the count of specific products on each shelf with the following criteria, based on the number of shelves in the fridge . 
+    **Case 1: Refrigerators with 4 shelves MUST follow the following layout (starting from the bottom)**
+    + Shelf 1 has at least 6 bottles of Joco.
+    + Shelf 2 has at least 6 bottles of Abben.
+    + Shelf 3 has at least 6 bottles of Boncha.
+    + Shelf 4 has at least 6 bottles of Boncha.
+    + The mandatory order of brands is: Joco, Abben, Boncha and Boncha.
+
+    **Case 2: Refrigerators with 5 shelves MUST follow the following layout (starting from the bottom)**
+    + Shelf 1 has at least 6 bottles of Joco.
+    + Shelf 2 has at least 6 bottles of Abben.
+    + Shelf 3 has at least 6 bottles of Joco.
+    + Shelf 4 has at least 6 bottles of Boncha.
+    + Shelf 5 has at least 6 bottles of Boncha.
+    + The mandatory order of brands is: Joco, Abben, Joco, Boncha and Boncha.
+- Assign **target_met** for each shelf, "true" only if the shelf meets the criteria of that specific shelf. Otherwise, set it to "false".
+Then:
+- Add a **need_review** field in the JSON output. This field dictates whether an image needs a manual review, default value is "false".
+- When one of the following conditions is met, **need_review** must be set to "true".
+    + Abben bottles are identified to be on shelf 1 (bottom shelf).
+    + There are two or more different brands on the same shelf.
+    + There are non-Uniben products on any shelf.
+- Add a **review_comment** field at the end. This field must include **your reasoning**, detailing whether the given refrigerator complies with set criteria. Also tell me that the fridge have large sticker on the front door or not.
+</criteria>
+
+Think about your answer first before you respond **output_format**
