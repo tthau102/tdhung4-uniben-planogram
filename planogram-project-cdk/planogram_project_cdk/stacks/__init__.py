@@ -13,6 +13,9 @@ from .invoke_yolo_lambda_stack import (
 from .bucket_stack import (
     S3BucketCdkStack,
 )
+from .bedrock_inference_profile_stack import (
+    BedrockInferenceProfileStack,
+)
 
 
 __all__ = [
@@ -21,4 +24,5 @@ __all__ = [
     "CreateTrainingJobLambdaCdkStack",
     "CreateEndpointLambdaCdkStack",
     "InvokeYOLOLambdaCdkStack",
+    "BedrockInferenceProfileStack",
 ]

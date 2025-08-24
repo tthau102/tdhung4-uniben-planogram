@@ -9,6 +9,7 @@ from planogram_project_cdk.stacks import (
     CreateEndpointLambdaCdkStack,
     InvokeYOLOLambdaCdkStack,
     S3BucketCdkStack,
+    BedrockInferenceProfileStack,
 )
 from aws_cdk import (
     aws_s3 as s3,
@@ -52,6 +53,12 @@ s3_bucket_stack = S3BucketCdkStack(
     env=env,
 )
 
+bedrock_inference_profile_stack = BedrockInferenceProfileStack(
+    app,
+    "BedrockInferenceProfileCdkStack",
+    env=env,
+)
+
 
 for stack in [
     export_annotations_lambda_stack,
@@ -59,6 +66,7 @@ for stack in [
     create_endpoint_lambda_stack,
     source_bucket_and_invoke_yolo_lambda_stack,
     s3_bucket_stack,
+    bedrock_inference_profile_stack,
 ]:
     cdk.Tags.of(stack).add("project", "planogram")
 
