@@ -55,9 +55,9 @@ source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
     vpc_and_rds_with_secrets_stack=vpc_and_rds_with_secrets_stack,
 )
 
-source_bucket_and_invoke_yolo_lambda_stack.add_dependency(
-    vpc_and_rds_with_secrets_stack
-)
+# source_bucket_and_invoke_yolo_lambda_stack.add_dependency(
+#     vpc_and_rds_with_secrets_stack
+# )
 
 s3_bucket_stack = S3BucketCdkStack(
     app,

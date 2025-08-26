@@ -87,11 +87,11 @@ class InvokeYOLOLambdaCdkStack(Stack):
             #     "S3_MODEL_BUCKET": "a",
             # },
             vpc=vpc_and_rds_with_secrets_stack.vpc,
-            # vpc_subnets=ec2.SubnetSelection(
-            #     # subnets=[vpc_and_rds_with_secrets_stack.selected_subnet.subnet_id]
-            #     subnets=["subnet-089b4d059ee6cf7d1"]
-            # ),
+            vpc_subnets=ec2.SubnetSelection(
+                subnets=[vpc_and_rds_with_secrets_stack.selected_subnet]
+            ),
             security_groups=[vpc_and_rds_with_secrets_stack.lambda_security_group],
+            allow_public_subnet=True,
             description="Invoke YOLO",
         )
 
