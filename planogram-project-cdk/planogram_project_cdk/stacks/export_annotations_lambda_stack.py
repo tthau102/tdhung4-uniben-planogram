@@ -23,12 +23,9 @@ class ExportAnnotationsLambdaCdkStack(Stack):
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "service-role/AWSLambdaBasicExecutionRole",
-                )
+                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"),
             ],
-        )
-
-        self.export_annotations_lambda_role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
         )
 
         self.export_annotations_function = lambda_.Function(

@@ -10,13 +10,20 @@ from aws_cdk import (
     aws_s3_deployment as s3_deployment,
     aws_s3_notifications as s3n,
     aws_s3 as s3,
+    aws_ec2 as ec2,
 )
 from constructs import Construct
 
 
 class InvokeYOLOLambdaCdkStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(
+        self,
+        scope: Construct,
+        construct_id: str,
+        vpc_and_rds_with_secrets_stack=None,
+        **kwargs
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         self.source_bucket = s3.Bucket(
@@ -59,28 +66,6 @@ class InvokeYOLOLambdaCdkStack(Stack):
             ],
         )
 
-        # self.invoke_yolo_lambda_role.add_managed_policy(
-        #     iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
-        # )
-        # self.invoke_yolo_lambda_role.add_managed_policy(
-        #     iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess")
-        # )
-        # self.invoke_yolo_lambda_role.add_managed_policy(
-        #     iam.ManagedPolicy.from_aws_managed_policy_name("AWSLambda_FullAccess")
-        # )
-        # self.invoke_yolo_lambda_role.add_managed_policy(
-        #     iam.ManagedPolicy.from_aws_managed_policy_name("AmazonBedrockFullAccess")
-        # )
-        # self.invoke_yolo_lambda_role.add_managed_policy(
-        #     iam.ManagedPolicy.from_aws_managed_policy_name("AmazonEC2FullAccess")
-        # )
-        # self.invoke_yolo_lambda_role.add_managed_policy(
-        #     iam.ManagedPolicy.from_aws_managed_policy_name("AmazonVPCFullAccess")
-        # )
-        # self.invoke_yolo_lambda_role.add_managed_policy(
-        #     iam.ManagedPolicy.from_aws_managed_policy_name("SecretsManagerReadWrite")
-        # )
-
         self.opencv_layer = lambda_.LayerVersion.from_layer_version_arn(
             self,
             "OpenCVLayer",
@@ -101,6 +86,12 @@ class InvokeYOLOLambdaCdkStack(Stack):
             # environment={
             #     "S3_MODEL_BUCKET": "a",
             # },
+            vpc=vpc_and_rds_with_secrets_stack.vpc,
+            # vpc_subnets=ec2.SubnetSelection(
+            #     # subnets=[vpc_and_rds_with_secrets_stack.selected_subnet.subnet_id]
+            #     subnets=["subnet-089b4d059ee6cf7d1"]
+            # ),
+            security_groups=[vpc_and_rds_with_secrets_stack.lambda_security_group],
             description="Invoke YOLO",
         )
 

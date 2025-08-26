@@ -10,6 +10,7 @@ from planogram_project_cdk.stacks import (
     InvokeYOLOLambdaCdkStack,
     S3BucketCdkStack,
     BedrockInferenceProfileStack,
+    VpcAndRdsWithSecretsStack,
 )
 from aws_cdk import (
     aws_s3 as s3,
@@ -21,6 +22,12 @@ app = cdk.App()
 
 env = cdk.Environment(
     account=os.getenv("CDK_DEFAULT_ACCOUNT"), region=os.getenv("CDK_DEFAULT_REGION")
+)
+
+vpc_and_rds_with_secrets_stack = VpcAndRdsWithSecretsStack(
+    app,
+    "VpcAndRdsWithSecretsCdkStack",
+    env=env,
 )
 
 export_annotations_lambda_stack = ExportAnnotationsLambdaCdkStack(
@@ -45,6 +52,11 @@ source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
     app,
     "InvokeYOLOLambdaCdkStack",
     env=env,
+    vpc_and_rds_with_secrets_stack=vpc_and_rds_with_secrets_stack,
+)
+
+source_bucket_and_invoke_yolo_lambda_stack.add_dependency(
+    vpc_and_rds_with_secrets_stack
 )
 
 s3_bucket_stack = S3BucketCdkStack(
@@ -61,6 +73,7 @@ bedrock_inference_profile_stack = BedrockInferenceProfileStack(
 
 
 for stack in [
+    vpc_and_rds_with_secrets_stack,
     export_annotations_lambda_stack,
     create_training_job_lambda_stack,
     create_endpoint_lambda_stack,

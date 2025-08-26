@@ -22,18 +22,13 @@ class CreateEndpointLambdaCdkStack(Stack):
             managed_policies=[
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "service-role/AWSLambdaBasicExecutionRole",
-                )
+                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"),
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "AmazonSageMakerFullAccess"
+                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AWSLambda_FullAccess"),
             ],
-        )
-
-        self.create_endpoint_lambda_role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
-        )
-        self.create_endpoint_lambda_role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess")
-        )
-        self.create_endpoint_lambda_role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("AWSLambda_FullAccess")
         )
 
         # Endpoint role
@@ -41,13 +36,15 @@ class CreateEndpointLambdaCdkStack(Stack):
             self,
             "yolo-endpoint-role",
             assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
-        )
-
-        self.endpoint_role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess")
-        )
-        self.endpoint_role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSageMakerFullAccess")
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "service-role/AWSLambdaBasicExecutionRole",
+                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"),
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "AmazonSageMakerFullAccess"
+                ),
+            ],
         )
 
         # dependencies_layer = lambda_.LayerVersion(

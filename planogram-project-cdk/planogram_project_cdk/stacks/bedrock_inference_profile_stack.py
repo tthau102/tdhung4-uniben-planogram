@@ -3,7 +3,6 @@ from aws_cdk import (
     custom_resources as cr,
     aws_iam as iam,
     CfnOutput,
-    # aws_logs as logs,
 )
 from constructs import Construct
 
