@@ -53,12 +53,26 @@ class VpcAndRdsWithSecretsStack(Stack):
             ],
         )
 
+        self.rds_security_group = ec2.SecurityGroup(
+            self,
+            "RDSSecurityGroup",
+            vpc=self.vpc,
+            description="Security group for RDS database",
+            allow_all_outbound=False,
+        )
+
         self.lambda_security_group = ec2.SecurityGroup(
             self,
             "InvokeYOLOLambdaSecurityGroup",
             vpc=self.vpc,
             description="Security group for Lambda functions",
             allow_all_outbound=True,
+        )
+
+        self.rds_security_group.add_ingress_rule(
+            peer=self.lambda_security_group,
+            connection=ec2.Port.tcp(5432),  # PostgreSQL port
+            description="Allow Lambda to connect to RDS",
         )
 
         self.all_subnets = self.vpc.public_subnets + self.vpc.isolated_subnets
@@ -79,6 +93,7 @@ class VpcAndRdsWithSecretsStack(Stack):
             ),
             allocated_storage=100,
             database_name=self.database_name,
+            security_groups=[self.rds_security_group],
             credentials=rds.Credentials.from_generated_secret("postgres"),
             removal_policy=RemovalPolicy.DESTROY,
         )
