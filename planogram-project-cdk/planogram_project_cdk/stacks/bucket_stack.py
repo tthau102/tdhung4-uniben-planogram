@@ -4,6 +4,7 @@ from aws_cdk import (
     CfnOutput,
     custom_resources as cr,
     aws_iam as iam,
+    RemovalPolicy,
     aws_s3_deployment as s3_deployment,
 )
 from constructs import Construct
@@ -23,8 +24,8 @@ class S3BucketCdkStack(Stack):
             self,
             "planogram_training_bucket",
             versioned=False,
-            # removal_policy=cdk.RemovalPolicy.DESTROY,
-            # auto_delete_objects=True,
+            removal_policy=RemovalPolicy.DESTROY,
+            auto_delete_objects=True,
         )
 
         s3_deployment.BucketDeployment(
@@ -45,8 +46,8 @@ class S3BucketCdkStack(Stack):
             self,
             "planogram_test_bucket",
             versioned=False,
-            # removal_policy=cdk.RemovalPolicy.DESTROY,
-            # auto_delete_objects=True,
+            removal_policy=RemovalPolicy.DESTROY,
+            auto_delete_objects=True,
         )
 
         s3_deployment.BucketDeployment(

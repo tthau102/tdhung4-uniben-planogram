@@ -31,7 +31,7 @@ class InvokeYOLOLambdaCdkStack(Stack):
             "planogram_source_bucket",
             versioned=False,
             removal_policy=RemovalPolicy.DESTROY,
-            # auto_delete_objects=True,
+            auto_delete_objects=True,
             # block_public_access=s3.BlockPublicAccess.BLOCK_ALL
         )
 
