@@ -63,6 +63,9 @@ class InvokeYOLOLambdaCdkStack(Stack):
                 iam.ManagedPolicy.from_aws_managed_policy_name(
                     "SecretsManagerReadWrite"
                 ),
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "AmazonDynamoDBFullAccess_v2"
+                ),
             ],
         )
 

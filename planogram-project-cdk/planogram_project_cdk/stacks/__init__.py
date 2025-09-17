@@ -19,6 +19,9 @@ from .bedrock_inference_profile_stack import (
 from .vpc_and_rds_with_secrets_stack import (
     VpcAndRdsWithSecretsStack,
 )
+from .dynamodb_stack import (
+    DynamoDbStack,
+)
 
 
 __all__ = [
@@ -29,4 +32,5 @@ __all__ = [
     "InvokeYOLOLambdaCdkStack",
     "BedrockInferenceProfileStack",
     "VpcAndRdsWithSecretsStack",
+    "DynamoDbStack",
 ]

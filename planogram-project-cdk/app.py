@@ -11,6 +11,7 @@ from planogram_project_cdk.stacks import (
     S3BucketCdkStack,
     BedrockInferenceProfileStack,
     VpcAndRdsWithSecretsStack,
+    DynamoDbStack,
 )
 from aws_cdk import (
     aws_s3 as s3,
@@ -48,11 +49,19 @@ create_endpoint_lambda_stack = CreateEndpointLambdaCdkStack(
     env=env,
 )
 
+
 source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
     app,
     "InvokeYOLOLambdaCdkStack",
     env=env,
     vpc_and_rds_with_secrets_stack=vpc_and_rds_with_secrets_stack,
+)
+
+table_dynamodb_stack = DynamoDbStack(
+    app,
+    "DynamoDBCdkStack",
+    env=env,
+    invoke_yolo_lambda_stack=source_bucket_and_invoke_yolo_lambda_stack,
 )
 
 # source_bucket_and_invoke_yolo_lambda_stack.add_dependency(
