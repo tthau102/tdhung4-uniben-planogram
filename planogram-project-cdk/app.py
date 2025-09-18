@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import json
 
 import aws_cdk as cdk
 
@@ -21,6 +22,10 @@ from aws_cdk import (
 
 app = cdk.App()
 
+# Load configuration
+with open('config.json', 'r') as config_file:
+    config = json.load(config_file)
+
 env = cdk.Environment(
     account=os.getenv("CDK_DEFAULT_ACCOUNT"), region=os.getenv("CDK_DEFAULT_REGION")
 )
@@ -28,24 +33,28 @@ env = cdk.Environment(
 vpc_and_rds_with_secrets_stack = VpcAndRdsWithSecretsStack(
     app,
     "VpcAndRdsWithSecretsCdkStack",
+    config=config,
     env=env,
 )
 
 export_annotations_lambda_stack = ExportAnnotationsLambdaCdkStack(
     app,
     "ExportAnnotationsLambdaCdkStack",
+    config=config,
     env=env,
 )
 
 create_training_job_lambda_stack = CreateTrainingJobLambdaCdkStack(
     app,
     "CreateTrainingJobLambdaCdkStack",
+    config=config,
     env=env,
 )
 
 create_endpoint_lambda_stack = CreateEndpointLambdaCdkStack(
     app,
     "CreateEndpointLambdaCdkStack",
+    config=config,
     env=env,
 )
 
@@ -53,6 +62,7 @@ create_endpoint_lambda_stack = CreateEndpointLambdaCdkStack(
 source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
     app,
     "InvokeYOLOLambdaCdkStack",
+    config=config,
     env=env,
     vpc_and_rds_with_secrets_stack=vpc_and_rds_with_secrets_stack,
 )
@@ -60,6 +70,7 @@ source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
 table_dynamodb_stack = DynamoDbStack(
     app,
     "DynamoDBCdkStack",
+    config=config,
     env=env,
     invoke_yolo_lambda_stack=source_bucket_and_invoke_yolo_lambda_stack,
 )
@@ -71,12 +82,14 @@ table_dynamodb_stack = DynamoDbStack(
 s3_bucket_stack = S3BucketCdkStack(
     app,
     "S3BucketCdkStack",
+    config=config,
     env=env,
 )
 
 bedrock_inference_profile_stack = BedrockInferenceProfileStack(
     app,
     "BedrockInferenceProfileCdkStack",
+    config=config,
     env=env,
 )
 

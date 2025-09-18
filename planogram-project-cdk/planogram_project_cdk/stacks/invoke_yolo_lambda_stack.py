@@ -21,10 +21,12 @@ class InvokeYOLOLambdaCdkStack(Stack):
         self,
         scope: Construct,
         construct_id: str,
+        config: dict,
         vpc_and_rds_with_secrets_stack=None,
         **kwargs
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        self.config = config
 
         self.source_bucket = s3.Bucket(
             self,
@@ -128,3 +130,4 @@ class InvokeYOLOLambdaCdkStack(Stack):
             value=self.invoke_yolo_function.function_name,
             description="invoke_yolo function",
         )
+

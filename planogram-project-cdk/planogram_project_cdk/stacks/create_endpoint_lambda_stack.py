@@ -12,8 +12,9 @@ from constructs import Construct
 
 class CreateEndpointLambdaCdkStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, config: dict, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        self.config = config
 
         self.create_endpoint_lambda_role = iam.Role(
             self,
@@ -91,3 +92,4 @@ class CreateEndpointLambdaCdkStack(Stack):
             value=self.create_endpoint_function.function_name,
             description="create_endpoint function",
         )
+

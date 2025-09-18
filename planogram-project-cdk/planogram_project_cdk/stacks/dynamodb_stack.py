@@ -18,10 +18,12 @@ class DynamoDbStack(Stack):
         self,
         scope: Construct,
         construct_id: str,
+        config: dict,
         invoke_yolo_lambda_stack=None,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        self.config = config
 
         self.table = dynamodb.TableV2(
             self,
@@ -112,3 +114,4 @@ class DynamoDbStack(Stack):
             value=self.table.table_arn,
             description="DynamoDB Table ARN",
         )
+

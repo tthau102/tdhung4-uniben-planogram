@@ -16,9 +16,11 @@ class S3BucketCdkStack(Stack):
         self,
         scope: Construct,
         construct_id: str,
+        config: dict,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        self.config = config
 
         self.training_bucket = s3.Bucket(
             self,
@@ -95,3 +97,4 @@ class S3BucketCdkStack(Stack):
             value=self.test_bucket.bucket_arn,
             description="",
         )
+

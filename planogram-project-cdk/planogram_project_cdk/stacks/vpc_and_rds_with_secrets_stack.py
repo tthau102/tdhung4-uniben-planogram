@@ -29,8 +29,9 @@ import json
 
 
 class VpcAndRdsWithSecretsStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, config: dict, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        self.config = config
 
         # VPC for RDS
         self.vpc = ec2.Vpc(
@@ -200,3 +201,4 @@ class VpcAndRdsWithSecretsStack(Stack):
             value=self.vpc.public_subnets[0].subnet_id,
             description="Public Subnet ID where ENI is created",
         )
+
