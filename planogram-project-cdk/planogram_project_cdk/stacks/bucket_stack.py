@@ -34,14 +34,14 @@ class S3BucketCdkStack(Stack):
             self,
             "CreateTrainingModelFolder",
             destination_bucket=self.training_bucket,
-            sources=[s3_deployment.Source.data("tranining-model/", "")],
+            sources=[s3_deployment.Source.data("tranining-model/.keep", "")],
         )
 
         s3_deployment.BucketDeployment(
             self,
             "CreateLabeledImageFolder",
             destination_bucket=self.training_bucket,
-            sources=[s3_deployment.Source.data("labeled-image/", "")],
+            sources=[s3_deployment.Source.data("labeled-image/.keep", "")],
         )
 
         self.test_bucket = s3.Bucket(
@@ -56,14 +56,14 @@ class S3BucketCdkStack(Stack):
             self,
             "CreateAnnotatedImageFolder",
             destination_bucket=self.test_bucket,
-            sources=[s3_deployment.Source.data("annotated-images/", "")],
+            sources=[s3_deployment.Source.data("annotated-images/.keep", "")],
         )
 
         s3_deployment.BucketDeployment(
             self,
             "CreateTestImageFolder",
             destination_bucket=self.test_bucket,
-            sources=[s3_deployment.Source.data("test-images/", "")],
+            sources=[s3_deployment.Source.data("test-images/.keep", "")],
         )
 
         # Tags.of(self.source_bucket).add("project", "planogram")

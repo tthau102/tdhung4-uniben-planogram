@@ -7,7 +7,7 @@ import uuid
 
 
 class DynamoDBWriter:
-    def __init__(self, table_name: str, region_name: str = "us-east-1"):
+    def __init__(self, table_name: str, region_name: str = "ap-southeast-1"):
         """
         Initialize DynamoDB writer
 

@@ -42,7 +42,7 @@ class InvokeYOLOLambdaCdkStack(Stack):
             self,
             "CreateImageFolder",
             destination_bucket=self.source_bucket,
-            sources=[s3_deployment.Source.data("images/", "")],
+            sources=[s3_deployment.Source.data("images/.keep", "")],
         )
 
         self.invoke_yolo_lambda_role = iam.Role(
@@ -114,6 +114,18 @@ class InvokeYOLOLambdaCdkStack(Stack):
             s3.NotificationKeyFilter(prefix="images/", suffix=".jpg"),
         )
 
+        # Create Elastic IP for Lambda ENI
+        self.lambda_elastic_ip = ec2.CfnEIP(
+            self,
+            "InvokeYOLOLambdaElasticIP",
+            domain="vpc",
+            tags=[
+                {"key": "Name", "value": "invoke-yolo-lambda-eip"},
+                {"key": "Purpose", "value": "Lambda Function Elastic IP"},
+                {"key": "Function", "value": self.invoke_yolo_function.function_name},
+            ],
+        )
+
         CfnOutput(
             self,
             "BucketName",
@@ -134,3 +146,24 @@ class InvokeYOLOLambdaCdkStack(Stack):
             value=self.invoke_yolo_function.function_name,
             description="invoke_yolo function",
         )
+
+        # CfnOutput(
+        #     self,
+        #     "LambdaENIId",
+        #     value=self.lambda_eni.ref,
+        #     description="Elastic Network Interface ID for invoke_yolo Lambda",
+        # )
+
+        CfnOutput(
+            self,
+            "LambdaElasticIPAddress",
+            value=self.lambda_elastic_ip.attr_public_ip,
+            description="Elastic IP Address for invoke_yolo Lambda",
+        )
+
+        # CfnOutput(
+        #     self,
+        #     "LambdaENIPrivateIP",
+        #     value=self.lambda_eni.attr_primary_private_ip_address,
+        #     description="Private IP Address of invoke_yolo Lambda ENI",
+        # )

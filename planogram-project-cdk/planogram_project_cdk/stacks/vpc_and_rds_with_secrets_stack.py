@@ -123,39 +123,36 @@ class VpcAndRdsWithSecretsStack(Stack):
         # )
 
         # Create Elastic Network Interface in the first public subnet
-        print(self.vpc.public_subnets)
         self.selected_subnet = self.vpc.public_subnets[0]
 
-        self.eni = ec2.CfnNetworkInterface(
-            self,
-            "HungPublicENI",
-            subnet_id=self.selected_subnet.subnet_id,
-            description="ENI in public subnet with Elastic IP",
-            # group_set=[security_group.security_group_id],
-            tags=[
-                # {"key": "project", "value": "planogram"},
-                {"key": "Subnet", "value": self.selected_subnet.subnet_id},
-            ],
-        )
+        # self.eni = ec2.CfnNetworkInterface(
+        #     self,
+        #     "HungPublicENI",
+        #     subnet_id=self.selected_subnet.subnet_id,
+        #     description="ENI in public subnet with Elastic IP",
+        #     tags=[
+        #         {"key": "Subnet", "value": self.selected_subnet.subnet_id},
+        #     ],
+        # )
 
-        # Create Elastic IP
-        self.elastic_ip = ec2.CfnEIP(
-            self,
-            "ElasticIP",
-            domain="vpc",
-            tags=[
-                {"key": "Name", "value": "ENI-Elastic-IP"},
-                {"key": "Purpose", "value": "Public Subnet ENI"},
-            ],
-        )
+        # # Create Elastic IP
+        # self.elastic_ip = ec2.CfnEIP(
+        #     self,
+        #     "ElasticIP",
+        #     domain="vpc",
+        #     tags=[
+        #         {"key": "Name", "value": "ENI-Elastic-IP"},
+        #         {"key": "Purpose", "value": "Public Subnet ENI"},
+        #     ],
+        # )
 
-        # Associate Elastic IP with the ENI
-        self.eip_association = ec2.CfnEIPAssociation(
-            self,
-            "EIPAssociation",
-            allocation_id=self.elastic_ip.attr_allocation_id,
-            network_interface_id=self.eni.ref,
-        )
+        # # Associate Elastic IP with the ENI
+        # self.eip_association = ec2.CfnEIPAssociation(
+        #     self,
+        #     "EIPAssociation",
+        #     allocation_id=self.elastic_ip.attr_allocation_id,
+        #     network_interface_id=self.eni.ref,
+        # )
 
         # Create S3 Gateway Endpoint
         self.s3_gateway_endpoint = ec2.GatewayVpcEndpoint(
@@ -164,7 +161,8 @@ class VpcAndRdsWithSecretsStack(Stack):
             vpc=self.vpc,
             service=ec2.GatewayVpcEndpointAwsService.S3,
             subnets=[
-                ec2.SubnetSelection(subnets=[self.vpc.public_subnets[0]]),
+                # ec2.SubnetSelection(subnets=[self.vpc.public_subnets[0]]),
+                ec2.SubnetSelection(subnets=[self.selected_subnet]),
                 # ec2.SubnetSelection(
                 #     subnets=self.vpc.isolated_subnets
                 # )
@@ -189,26 +187,26 @@ class VpcAndRdsWithSecretsStack(Stack):
             description="Complete secret with all connection details",
         )
 
-        CfnOutput(
-            self,
-            "ElasticIPAddress",
-            value=self.elastic_ip.attr_public_ip,
-            description="Elastic IP Address",
-        )
+        # CfnOutput(
+        #     self,
+        #     "ElasticIPAddress",
+        #     value=self.elastic_ip.attr_public_ip,
+        #     description="Elastic IP Address",
+        # )
 
-        CfnOutput(
-            self,
-            "ENIId",
-            value=self.eni.ref,
-            description="Elastic Network Interface ID",
-        )
+        # CfnOutput(
+        #     self,
+        #     "ENIId",
+        #     value=self.eni.ref,
+        #     description="Elastic Network Interface ID",
+        # )
 
-        CfnOutput(
-            self,
-            "ENIPrivateIP",
-            value=self.eni.attr_primary_private_ip_address,
-            description="ENI Private IP Address",
-        )
+        # CfnOutput(
+        #     self,
+        #     "ENIPrivateIP",
+        #     value=self.eni.attr_primary_private_ip_address,
+        #     description="ENI Private IP Address",
+        # )
 
         CfnOutput(
             self,

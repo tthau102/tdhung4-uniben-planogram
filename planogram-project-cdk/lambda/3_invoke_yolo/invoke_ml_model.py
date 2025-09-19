@@ -25,7 +25,7 @@ def invoke_YOLO(image_bytes):
 
     print(f"Test payload size: {len(payload)} bytes")
 
-    runtime = boto3.client("runtime.sagemaker")
+    runtime = boto3.client("sagemaker-runtime")
     response = runtime.invoke_endpoint(
         EndpointName=os.getenv("ML_ENDPOINT"),
         ContentType="text/csv",

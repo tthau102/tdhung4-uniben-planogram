@@ -158,7 +158,6 @@ def lambda_handler(event, context):
     review_comment = llm_result["refrigerator_analysis"]["review_comment"]
 
     dynamo_writer = DynamoDBWriter(os.getenv("DB_NAME"))
-
     dynamo_writer.write_single_item(
         item_data={
             "image_name": event["Records"][0]["s3"]["object"]["key"],
