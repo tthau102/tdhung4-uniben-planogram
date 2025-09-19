@@ -13,9 +13,11 @@ import os
 
 class ExportAnnotationsLambdaCdkStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, config: dict, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, construct_id: str, config: dict, **kwargs
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.config = config
+        self.stack_config = config["export_annotations_lambda_cdk_stack"]
 
         self.export_annotations_lambda_role = iam.Role(
             self,
@@ -58,4 +60,3 @@ class ExportAnnotationsLambdaCdkStack(Stack):
             value=self.export_annotations_function.function_name,
             description="export_annotations function",
         )
-

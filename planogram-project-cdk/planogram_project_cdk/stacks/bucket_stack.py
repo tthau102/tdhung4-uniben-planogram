@@ -20,7 +20,7 @@ class S3BucketCdkStack(Stack):
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.config = config
+        self.stack_config = config["s3_bucket_cdk_stack"]
 
         self.training_bucket = s3.Bucket(
             self,
@@ -97,4 +97,3 @@ class S3BucketCdkStack(Stack):
             value=self.test_bucket.bucket_arn,
             description="",
         )
-

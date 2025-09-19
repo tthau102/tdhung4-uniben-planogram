@@ -1,11 +1,9 @@
-import boto3
-import json
+import boto3, json, os
 
 
 def invoke_claude(shelfResult):
     client = boto3.client("bedrock-runtime", region_name="ap-southeast-1")
-    modelId = "arn:aws:bedrock:ap-southeast-1:151182331915:application-inference-profile/yxyw9vn97ihj"
-
+    modelId = os.getenv("INFERENCE_PROFILE")
     with open("1_system_prompt.txt", "r", encoding="utf-8") as f:
         system_prompt = f.read()
     with open("2_instructions.txt", "r", encoding="utf-8") as f:

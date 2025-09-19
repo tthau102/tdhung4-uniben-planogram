@@ -3,13 +3,17 @@ from aws_cdk import (
     custom_resources as cr,
     aws_iam as iam,
     CfnOutput,
+    RemovalPolicy,
 )
 from constructs import Construct
 
 
 class BedrockInferenceProfileStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, construct_id: str, config: dict, **kwargs
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
+        self.stack_config = config["bedrock_inference_profile_cdk_stack"]
 
         self.profile_name = "planogram-inference-profile"
         self.inference_profile = cr.AwsCustomResource(
@@ -37,8 +41,8 @@ class BedrockInferenceProfileStack(Stack):
                 service="Bedrock",
                 action="deleteInferenceProfile",
                 parameters={
-                    # Use the profile name directly instead of reference
-                    "inferenceProfileIdentifier": self.profile_name
+                    # Use PhysicalResourceIdReference which will be the ARN
+                    "inferenceProfileIdentifier": cr.PhysicalResourceIdReference()
                 },
             ),
             policy=cr.AwsCustomResourcePolicy.from_statements(
@@ -53,6 +57,7 @@ class BedrockInferenceProfileStack(Stack):
                     )
                 ]
             ),
+            removal_policy=RemovalPolicy.DESTROY,
         )
 
         self.profileARN = self.inference_profile.get_response_field(
@@ -64,4 +69,11 @@ class BedrockInferenceProfileStack(Stack):
             "ProfileARN",
             value=self.profileARN,
             description="Inference Profile",
+        )
+
+        CfnOutput(
+            self,
+            "ProfileName",
+            value=self.profile_name,
+            description="Inference Profile Name",
         )

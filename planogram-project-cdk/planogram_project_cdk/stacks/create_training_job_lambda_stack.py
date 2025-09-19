@@ -12,9 +12,11 @@ from constructs import Construct
 
 class CreateTrainingJobLambdaCdkStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, config: dict, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, construct_id: str, config: dict, **kwargs
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.config = config
+        self.stack_config = config["create_training_job_lambda_cdk_stack"]
 
         self.create_training_job_policy = iam.Policy(
             self,
@@ -92,4 +94,3 @@ class CreateTrainingJobLambdaCdkStack(Stack):
             value=self.create_training_job_function.function_name,
             description="create_training_job function",
         )
-

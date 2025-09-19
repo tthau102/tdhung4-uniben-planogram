@@ -9,11 +9,11 @@ import uuid
 class DynamoDBWriter:
     def __init__(self, table_name: str, region_name: str = "us-east-1"):
         """
-        Khởi tạo DynamoDB writer
+        Initialize DynamoDB writer
 
         Args:
-            table_name: Tên table DynamoDB
-            region_name: AWS region (mặc định us-east-1)
+            table_name: DynamoDB table name
+            region_name: AWS region (default us-east-1)
         """
         self.dynamodb = boto3.resource("dynamodb", region_name=region_name)
         self.table = self.dynamodb.Table(table_name)
@@ -21,7 +21,7 @@ class DynamoDBWriter:
 
     def _convert_to_dynamodb_format(self, data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Chuyển đổi dữ liệu sang format phù hợp với DynamoDB
+        Convert data to DynamoDB compatible format
         """
         converted = {}
 
@@ -45,45 +45,45 @@ class DynamoDBWriter:
 
     def write_single_item(self, item_data: Dict[str, Any]) -> bool:
         """
-        Ghi một item vào DynamoDB
+        Write a single item to DynamoDB
 
         Args:
-            item_data: Dictionary chứa dữ liệu item
+            item_data: Dictionary containing item data
 
         Returns:
-            bool: True nếu thành công, False nếu thất bại
+            bool: True if successful, False if failed
         """
         try:
-            # Chuyển đổi dữ liệu
+            # Convert data
             converted_data = self._convert_to_dynamodb_format(item_data)
 
-            # Thêm id nếu không có
+            # Add id if not present
             if "id" not in converted_data:
                 converted_data["id"] = str(uuid.uuid4())
 
-            # Thêm timestamp nếu không có
+            # Add timestamp if not present
             if "timestamp" not in converted_data:
                 converted_data["timestamp"] = datetime.now().isoformat()
 
-            # Ghi vào DynamoDB
+            # Write to DynamoDB
             response = self.table.put_item(Item=converted_data)
 
-            print(f"✅ Đã ghi thành công item với ID: {converted_data['id']}")
+            print(f"Successfully wrote item with ID: {converted_data['id']}")
             return True
 
         except Exception as e:
-            print(f"❌ Lỗi khi ghi item: {str(e)}")
+            print(f"Error writing item: {str(e)}")
             return False
 
     def write_multiple_items(self, items_data: list) -> Dict[str, int]:
         """
-        Ghi nhiều items vào DynamoDB bằng batch_writer
+        Write multiple items to DynamoDB using batch_writer
 
         Args:
-            items_data: List các dictionary chứa dữ liệu
+            items_data: List of dictionaries containing data
 
         Returns:
-            Dict với số lượng thành công và thất bại
+            Dict with counts of successful and failed operations
         """
         success_count = 0
         error_count = 0
@@ -92,14 +92,14 @@ class DynamoDBWriter:
             with self.table.batch_writer() as batch:
                 for item in items_data:
                     try:
-                        # Chuyển đổi dữ liệu
+                        # Convert data
                         converted_data = self._convert_to_dynamodb_format(item)
 
-                        # Thêm id nếu không có
+                        # Add id if not present
                         if "id" not in converted_data:
                             converted_data["id"] = str(uuid.uuid4())
 
-                        # Thêm timestamp nếu không có
+                        # Add timestamp if not present
                         if "timestamp" not in converted_data:
                             converted_data["timestamp"] = datetime.now().isoformat()
 
@@ -107,15 +107,15 @@ class DynamoDBWriter:
                         success_count += 1
 
                     except Exception as e:
-                        print(f"❌ Lỗi khi xử lý item: {str(e)}")
+                        print(f"❌ Error processing item: {str(e)}")
                         error_count += 1
 
             print(
-                f"✅ Hoàn thành batch write: {success_count} thành công, {error_count} lỗi"
+                f"Completed batch write: {success_count} successful, {error_count} errors"
             )
 
         except Exception as e:
-            print(f"❌ Lỗi batch write: {str(e)}")
+            print(f"Batch write error: {str(e)}")
             error_count += len(items_data) - success_count
 
         return {
@@ -126,31 +126,31 @@ class DynamoDBWriter:
 
     def update_item(self, item_id: str, update_data: Dict[str, Any]) -> bool:
         """
-        Cập nhật một item trong DynamoDB
+        Update an item in DynamoDB
 
         Args:
-            item_id: ID của item cần update
-            update_data: Dictionary chứa dữ liệu cần update
+            item_id: ID of the item to update
+            update_data: Dictionary containing data to update
 
         Returns:
-            bool: True nếu thành công
+            bool: True if successful
         """
         try:
-            # Chuyển đổi dữ liệu
+            # Convert data
             converted_data = self._convert_to_dynamodb_format(update_data)
 
-            # Tạo update expression
+            # Create update expression
             update_expression = "SET "
             expression_values = {}
 
             for key, value in converted_data.items():
-                if key != "id":  # Không update primary key
+                if key != "id":  # Don't update primary key
                     update_expression += f"{key} = :{key}, "
                     expression_values[f":{key}"] = value
 
             update_expression = update_expression.rstrip(", ")
 
-            # Thực hiện update
+            # Perform update
             response = self.table.update_item(
                 Key={"id": item_id},
                 UpdateExpression=update_expression,
@@ -158,42 +158,42 @@ class DynamoDBWriter:
                 ReturnValues="UPDATED_NEW",
             )
 
-            print(f"✅ Đã update thành công item ID: {item_id}")
+            print(f"Successfully updated item ID: {item_id}")
             return True
 
         except Exception as e:
-            print(f"❌ Lỗi khi update item: {str(e)}")
+            print(f"Error updating item: {str(e)}")
             return False
 
 
 # def example_usage():
-#     """Ví dụ cách sử dụng DynamoDBWriter"""
+#     """Example usage of DynamoDBWriter"""
 
-#     # Khởi tạo writer
+#     # Initialize writer
 #     writer = DynamoDBWriter("your-table-name", "us-east-1")
 
-#     # Ví dụ 1: Ghi một item
+#     # Example 1: Write a single item
 #     single_item = {
 #         "id": "123",
 #         "image_name": "product_image_001.jpg",
 #         "product_count": {"total": 10, "available": 8},
 #         "compliance_assessment": True,
 #         "need_review": False,
-#         "review_comment": "Sản phẩm đạt chuẩn chất lượng",
+#         "review_comment": "Product meets quality standards",
 #         "s3_url": "https://my-bucket.s3.amazonaws.com/images/product_001.jpg",
 #         "timestamp": datetime.now(),
 #     }
 
 #     writer.write_single_item(single_item)
 
-#     # Ví dụ 2: Ghi nhiều items
+#     # Example 2: Write multiple items
 #     multiple_items = [
 #         {
 #             "image_name": "product_002.jpg",
 #             "product_count": {"total": 15, "available": 12},
 #             "compliance_assessment": True,
 #             "need_review": True,
-#             "review_comment": "Cần kiểm tra thêm",
+#             "review_comment": "Needs additional inspection",
 #             "s3_url": "https://my-bucket.s3.amazonaws.com/images/product_002.jpg",
 #         },
 #         {
@@ -201,18 +201,18 @@ class DynamoDBWriter:
 #             "product_count": {"total": 20, "available": 18},
 #             "compliance_assessment": False,
 #             "need_review": True,
-#             "review_comment": "Không đạt chuẩn an toàn",
+#             "review_comment": "Does not meet safety standards",
 #             "s3_url": "https://my-bucket.s3.amazonaws.com/images/product_003.jpg",
 #         },
 #     ]
 
 #     result = writer.write_multiple_items(multiple_items)
-#     print(f"Kết quả batch write: {result}")
+#     print(f"Batch write result: {result}")
 
-#     # Ví dụ 3: Update item
+#     # Example 3: Update item
 #     update_data = {
 #         "compliance_assessment": True,
-#         "review_comment": "Đã sửa lỗi, hiện tại đạt chuẩn",
+#         "review_comment": "Fixed issues, now meets standards",
 #         "need_review": False,
 #     }
 

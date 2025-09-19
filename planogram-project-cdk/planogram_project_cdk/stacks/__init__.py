@@ -22,6 +22,9 @@ from .vpc_and_rds_with_secrets_stack import (
 from .dynamodb_stack import (
     DynamoDbStack,
 )
+from .lambda_layers_stack import (
+    LambdaLayersStack,
+)
 
 
 __all__ = [
@@ -33,4 +36,5 @@ __all__ = [
     "BedrockInferenceProfileStack",
     "VpcAndRdsWithSecretsStack",
     "DynamoDbStack",
+    "LambdaLayersStack",
 ]

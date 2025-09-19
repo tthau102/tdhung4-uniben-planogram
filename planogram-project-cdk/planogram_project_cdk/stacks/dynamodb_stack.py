@@ -23,7 +23,7 @@ class DynamoDbStack(Stack):
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.config = config
+        self.stack_config = config["dynamo_db_cdk_stack"]
 
         self.table = dynamodb.TableV2(
             self,
@@ -114,4 +114,3 @@ class DynamoDbStack(Stack):
             value=self.table.table_arn,
             description="DynamoDB Table ARN",
         )
-

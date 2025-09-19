@@ -12,9 +12,16 @@ from constructs import Construct
 
 class CreateEndpointLambdaCdkStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, config: dict, **kwargs) -> None:
+    def __init__(
+        self,
+        scope: Construct,
+        construct_id: str,
+        config: dict,
+        lambda_layers_stack=None,
+        **kwargs,
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.config = config
+        self.stack_config = config["create_endpoint_lambda_cdk_stack"]
 
         self.create_endpoint_lambda_role = iam.Role(
             self,
@@ -48,17 +55,10 @@ class CreateEndpointLambdaCdkStack(Stack):
             ],
         )
 
-        # dependencies_layer = lambda_.LayerVersion(
-        #     self, "DependenciesLayer",
-        #     code=lambda_.Code.from_asset("layers/dependencies"),
-        #     compatible_runtimes=[lambda_.Runtime.PYTHON_3_9],
-        #     description="Common dependencies"
-        # )
-
         self.sagemaker_layer = lambda_.LayerVersion.from_layer_version_arn(
             self,
             "SageMakerLayer",
-            "arn:aws:lambda:ap-southeast-1:151182331915:layer:sagemaker:1",
+            lambda_layers_stack.sagemaker_layer.layer_version_arn,
         )
 
         self.create_endpoint_function = lambda_.Function(
@@ -92,4 +92,3 @@ class CreateEndpointLambdaCdkStack(Stack):
             value=self.create_endpoint_function.function_name,
             description="create_endpoint function",
         )
-

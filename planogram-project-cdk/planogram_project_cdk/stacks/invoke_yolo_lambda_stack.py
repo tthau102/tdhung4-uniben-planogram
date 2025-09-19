@@ -23,10 +23,11 @@ class InvokeYOLOLambdaCdkStack(Stack):
         construct_id: str,
         config: dict,
         vpc_and_rds_with_secrets_stack=None,
+        lambda_layers_stack=None,
         **kwargs
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.config = config
+        self.stack_config = config["invoke_yolo_lambda_cdk_stack"]
 
         self.source_bucket = s3.Bucket(
             self,
@@ -74,7 +75,7 @@ class InvokeYOLOLambdaCdkStack(Stack):
         self.opencv_layer = lambda_.LayerVersion.from_layer_version_arn(
             self,
             "OpenCVLayer",
-            "arn:aws:lambda:ap-southeast-1:151182331915:layer:opencv:5",
+            lambda_layers_stack.opencv_layer.layer_version_arn,
         )
 
         self.invoke_yolo_function = lambda_.Function(
@@ -88,9 +89,12 @@ class InvokeYOLOLambdaCdkStack(Stack):
             ephemeral_storage_size=Size.mebibytes(2048),
             role=self.invoke_yolo_lambda_role,
             layers=[self.opencv_layer],
-            # environment={
-            #     "S3_MODEL_BUCKET": "a",
-            # },
+            environment={
+                "DB_NAME": "PlanogramResultTable",
+                "ML_ENDPOINT": "_",
+                "INFERENCE_PROFILE": "arn:aws:bedrock:ap-southeast-1:151182331915:application-inference-profile/yxyw9vn97ihj",
+                "ANNOTATED_BUCKET": "uniben-planogram-test",
+            },
             vpc=vpc_and_rds_with_secrets_stack.vpc,
             vpc_subnets=ec2.SubnetSelection(
                 subnets=[vpc_and_rds_with_secrets_stack.selected_subnet]
@@ -130,4 +134,3 @@ class InvokeYOLOLambdaCdkStack(Stack):
             value=self.invoke_yolo_function.function_name,
             description="invoke_yolo function",
         )
-

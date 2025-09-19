@@ -13,6 +13,7 @@ from planogram_project_cdk.stacks import (
     BedrockInferenceProfileStack,
     VpcAndRdsWithSecretsStack,
     DynamoDbStack,
+    LambdaLayersStack,
 )
 from aws_cdk import (
     aws_s3 as s3,
@@ -23,7 +24,7 @@ from aws_cdk import (
 app = cdk.App()
 
 # Load configuration
-with open('config.json', 'r') as config_file:
+with open("config.json", "r") as config_file:
     config = json.load(config_file)
 
 env = cdk.Environment(
@@ -33,6 +34,13 @@ env = cdk.Environment(
 vpc_and_rds_with_secrets_stack = VpcAndRdsWithSecretsStack(
     app,
     "VpcAndRdsWithSecretsCdkStack",
+    config=config,
+    env=env,
+)
+
+lambda_layers_stack = LambdaLayersStack(
+    app,
+    "LambdaLayersCDKStack",
     config=config,
     env=env,
 )
@@ -55,6 +63,7 @@ create_endpoint_lambda_stack = CreateEndpointLambdaCdkStack(
     app,
     "CreateEndpointLambdaCdkStack",
     config=config,
+    lambda_layers_stack=lambda_layers_stack,
     env=env,
 )
 
@@ -64,6 +73,7 @@ source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
     "InvokeYOLOLambdaCdkStack",
     config=config,
     env=env,
+    lambda_layers_stack=lambda_layers_stack,
     vpc_and_rds_with_secrets_stack=vpc_and_rds_with_secrets_stack,
 )
 
@@ -96,12 +106,14 @@ bedrock_inference_profile_stack = BedrockInferenceProfileStack(
 
 for stack in [
     vpc_and_rds_with_secrets_stack,
+    lambda_layers_stack,
     export_annotations_lambda_stack,
     create_training_job_lambda_stack,
     create_endpoint_lambda_stack,
     source_bucket_and_invoke_yolo_lambda_stack,
     s3_bucket_stack,
     bedrock_inference_profile_stack,
+    table_dynamodb_stack,
 ]:
     cdk.Tags.of(stack).add("project", "planogram")
 

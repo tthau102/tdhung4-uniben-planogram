@@ -29,15 +29,17 @@ import json
 
 
 class VpcAndRdsWithSecretsStack(Stack):
-    def __init__(self, scope: Construct, construct_id: str, config: dict, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, construct_id: str, config: dict, **kwargs
+    ) -> None:
         super().__init__(scope, construct_id, **kwargs)
-        self.config = config
+        self.stack_config = config["vpc_and_rds_with_secrets_cdk_stack"]
 
         # VPC for RDS
         self.vpc = ec2.Vpc(
             self,
-            "planogram-VPC",
-            ip_addresses=ec2.IpAddresses.cidr("10.15.0.0/16"),
+            self.stack_config["vpc_name"],
+            ip_addresses=ec2.IpAddresses.cidr(self.stack_config["cidr"]),
             max_azs=3,
             subnet_configuration=[
                 ec2.SubnetConfiguration(
@@ -78,7 +80,6 @@ class VpcAndRdsWithSecretsStack(Stack):
 
         self.all_subnets = self.vpc.public_subnets + self.vpc.isolated_subnets
 
-        self.database_name = "planogram"
         self.db_instance = rds.DatabaseInstance(
             self,
             "planogram-PostgresDB",
@@ -92,8 +93,8 @@ class VpcAndRdsWithSecretsStack(Stack):
             vpc_subnets=ec2.SubnetSelection(
                 subnets=self.all_subnets  # Use combined subnets
             ),
-            allocated_storage=100,
-            database_name=self.database_name,
+            allocated_storage=self.stack_config["allocated_storage"],
+            database_name=self.stack_config["database_name"],
             security_groups=[self.rds_security_group],
             credentials=rds.Credentials.from_generated_secret("postgres"),
             removal_policy=RemovalPolicy.DESTROY,
@@ -156,6 +157,20 @@ class VpcAndRdsWithSecretsStack(Stack):
             network_interface_id=self.eni.ref,
         )
 
+        # Create S3 Gateway Endpoint
+        self.s3_gateway_endpoint = ec2.GatewayVpcEndpoint(
+            self,
+            "S3GatewayEndpoint",
+            vpc=self.vpc,
+            service=ec2.GatewayVpcEndpointAwsService.S3,
+            subnets=[
+                ec2.SubnetSelection(subnets=[self.vpc.public_subnets[0]]),
+                # ec2.SubnetSelection(
+                #     subnets=self.vpc.isolated_subnets
+                # )
+            ],
+        )
+
         CfnOutput(
             self, "ExportedVpcId", value=self.vpc.vpc_id, export_name="shared-vpc-id"
         )
@@ -202,3 +217,9 @@ class VpcAndRdsWithSecretsStack(Stack):
             description="Public Subnet ID where ENI is created",
         )
 
+        CfnOutput(
+            self,
+            "S3GatewayEndpointId",
+            value=self.s3_gateway_endpoint.vpc_endpoint_id,
+            description="S3 Gateway Endpoint ID",
+        )

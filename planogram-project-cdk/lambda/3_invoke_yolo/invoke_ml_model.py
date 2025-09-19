@@ -1,4 +1,4 @@
-import boto3, cv2, time, base64, json, numpy
+import boto3, cv2, time, base64, json, numpy, os
 
 
 def invoke_YOLO(image_bytes):
@@ -27,7 +27,7 @@ def invoke_YOLO(image_bytes):
 
     runtime = boto3.client("runtime.sagemaker")
     response = runtime.invoke_endpoint(
-        EndpointName="yolo11x-endpoint-20250813-094151",
+        EndpointName=os.getenv("ML_ENDPOINT"),
         ContentType="text/csv",
         Body=payload,
     )

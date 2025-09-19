@@ -1,6 +1,7 @@
 import boto3
 import sagemaker
 import os
+import json
 from sagemaker.model import Model
 from sagemaker.predictor import Predictor
 from datetime import datetime
@@ -9,6 +10,7 @@ from datetime import datetime
 def lambda_handler(event, context):
     print(event)
     sagemaker_session = sagemaker.Session()
+
     # model_data = f's3://uniben-data/output_lambda/yolo11x-20250804-093828/output/model.tar.gz'
     # model_data = f's3://uniben-planogram-training/tranining-model/{event.get("train_folder")}/output/model.tar.gz'
     model_data = f'{os.getenv("S3_MODEL_BUCKET")}/{event.get("train_folder")}/output/model.tar.gz'
@@ -44,6 +46,9 @@ def lambda_handler(event, context):
         initial_instance_count=1,
         instance_type=event.get("instance_type", "ml.m5.xlarge"),
         endpoint_name=endpoint_name,
+        tags=[
+            {"Key": "project", "Value": "planogram"},
+        ],
     )
 
     print(f"Model deployed successfully!")
