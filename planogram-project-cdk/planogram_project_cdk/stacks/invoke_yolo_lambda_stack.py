@@ -116,16 +116,16 @@ class InvokeYOLOLambdaCdkStack(Stack):
         )
 
         # Create Elastic IP for Lambda ENI
-        self.lambda_elastic_ip = ec2.CfnEIP(
-            self,
-            "InvokeYOLOLambdaElasticIP",
-            domain="vpc",
-            tags=[
-                {"key": "Name", "value": "invoke-yolo-lambda-eip"},
-                {"key": "Purpose", "value": "Lambda Function Elastic IP"},
-                {"key": "Function", "value": self.invoke_yolo_function.function_name},
-            ],
-        )
+        # self.lambda_elastic_ip = ec2.CfnEIP(
+        #     self,
+        #     "InvokeYOLOLambdaElasticIP",
+        #     domain="vpc",
+        #     tags=[
+        #         {"key": "Name", "value": "invoke-yolo-lambda-eip"},
+        #         {"key": "Purpose", "value": "Lambda Function Elastic IP"},
+        #         {"key": "Function", "value": self.invoke_yolo_function.function_name},
+        #     ],
+        # )
 
         CfnOutput(
             self,
@@ -150,21 +150,7 @@ class InvokeYOLOLambdaCdkStack(Stack):
 
         # CfnOutput(
         #     self,
-        #     "LambdaENIId",
-        #     value=self.lambda_eni.ref,
-        #     description="Elastic Network Interface ID for invoke_yolo Lambda",
-        # )
-
-        CfnOutput(
-            self,
-            "LambdaElasticIPAddress",
-            value=self.lambda_elastic_ip.attr_public_ip,
-            description="Elastic IP Address for invoke_yolo Lambda",
-        )
-
-        # CfnOutput(
-        #     self,
-        #     "LambdaENIPrivateIP",
-        #     value=self.lambda_eni.attr_primary_private_ip_address,
-        #     description="Private IP Address of invoke_yolo Lambda ENI",
+        #     "LambdaElasticIPAddress",
+        #     value=self.lambda_elastic_ip.attr_public_ip,
+        #     description="Elastic IP Address for invoke_yolo Lambda",
         # )

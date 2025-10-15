@@ -22,31 +22,31 @@ class S3BucketCdkStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
         self.stack_config = config["s3_bucket_cdk_stack"]
 
-        self.training_bucket = s3.Bucket(
-            self,
-            "planogram_training_bucket",
-            versioned=False,
-            removal_policy=RemovalPolicy.DESTROY,
-            auto_delete_objects=True,
-        )
+        # self.training_bucket = s3.Bucket(
+        #     self,
+        #     "planogram_training",
+        #     versioned=False,
+        #     removal_policy=RemovalPolicy.DESTROY,
+        #     auto_delete_objects=True,
+        # )
 
-        s3_deployment.BucketDeployment(
-            self,
-            "CreateTrainingModelFolder",
-            destination_bucket=self.training_bucket,
-            sources=[s3_deployment.Source.data("tranining-model/.keep", "")],
-        )
+        # s3_deployment.BucketDeployment(
+        #     self,
+        #     "CreateTrainingModelFolder",
+        #     destination_bucket=self.training_bucket,
+        #     sources=[s3_deployment.Source.data("tranining-model/.keep", "")],
+        # )
 
-        s3_deployment.BucketDeployment(
-            self,
-            "CreateLabeledImageFolder",
-            destination_bucket=self.training_bucket,
-            sources=[s3_deployment.Source.data("labeled-image/.keep", "")],
-        )
+        # s3_deployment.BucketDeployment(
+        #     self,
+        #     "CreateLabeledImageFolder",
+        #     destination_bucket=self.training_bucket,
+        #     sources=[s3_deployment.Source.data("labeled-image/.keep", "")],
+        # )
 
         self.test_bucket = s3.Bucket(
             self,
-            "planogram_test_bucket",
+            "planogram_test",
             versioned=False,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
@@ -66,23 +66,19 @@ class S3BucketCdkStack(Stack):
             sources=[s3_deployment.Source.data("test-images/.keep", "")],
         )
 
-        # Tags.of(self.source_bucket).add("project", "planogram")
-        # Tags.of(self.training_bucket).add("project", "planogram")
-        # Tags.of(self.test_bucket).add("project", "planogram")
+        # CfnOutput(
+        #     self,
+        #     "TrainingBucketName",
+        #     value=self.training_bucket.bucket_name,
+        #     description="",
+        # )
 
-        CfnOutput(
-            self,
-            "TrainingBucketName",
-            value=self.training_bucket.bucket_name,
-            description="",
-        )
-
-        CfnOutput(
-            self,
-            "TrainingBucketArn",
-            value=self.training_bucket.bucket_arn,
-            description="",
-        )
+        # CfnOutput(
+        #     self,
+        #     "TrainingBucketArn",
+        #     value=self.training_bucket.bucket_arn,
+        #     description="",
+        # )
 
         CfnOutput(
             self,
