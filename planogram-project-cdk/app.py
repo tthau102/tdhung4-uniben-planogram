@@ -11,7 +11,7 @@ from planogram_project_cdk.stacks import (
     InvokeYOLOLambdaCdkStack,
     S3BucketCdkStack,
     BedrockInferenceProfileStack,
-    VpcAndRdsWithSecretsStack,
+    VpcStack,
     DynamoDbStack,
     LambdaLayersStack,
 )
@@ -31,9 +31,9 @@ env = cdk.Environment(
     account=os.getenv("CDK_DEFAULT_ACCOUNT"), region=os.getenv("CDK_DEFAULT_REGION")
 )
 
-vpc_and_rds_with_secrets_stack = VpcAndRdsWithSecretsStack(
+vpc_stack = VpcStack(
     app,
-    "VpcAndRdsWithSecretsCdkStack",
+    "VpcCdkStack",
     config=config,
     env=env,
 )
@@ -96,7 +96,7 @@ source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
     config=config,
     env=env,
     lambda_layers_stack=lambda_layers_stack,
-    vpc_and_rds_with_secrets_stack=vpc_and_rds_with_secrets_stack,
+    vpc_stack=vpc_stack,
     bedrock_inference_profile_stack=bedrock_inference_profile_stack,
     table_dynamodb_stack=table_dynamodb_stack,
 )
@@ -108,7 +108,7 @@ source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
 
 
 for stack in [
-    vpc_and_rds_with_secrets_stack,
+    vpc_stack,
     lambda_layers_stack,
     export_annotations_lambda_stack,
     create_training_job_lambda_stack,

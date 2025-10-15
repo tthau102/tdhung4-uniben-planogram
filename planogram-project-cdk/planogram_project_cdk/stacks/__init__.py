@@ -16,8 +16,8 @@ from .bucket_stack import (
 from .bedrock_inference_profile_stack import (
     BedrockInferenceProfileStack,
 )
-from .vpc_and_rds_with_secrets_stack import (
-    VpcAndRdsWithSecretsStack,
+from .vpc_stack import (
+    VpcStack,
 )
 from .dynamodb_stack import (
     DynamoDbStack,
@@ -34,7 +34,7 @@ __all__ = [
     "CreateEndpointLambdaCdkStack",
     "InvokeYOLOLambdaCdkStack",
     "BedrockInferenceProfileStack",
-    "VpcAndRdsWithSecretsStack",
+    "VpcStack",
     "DynamoDbStack",
     "LambdaLayersStack",
 ]

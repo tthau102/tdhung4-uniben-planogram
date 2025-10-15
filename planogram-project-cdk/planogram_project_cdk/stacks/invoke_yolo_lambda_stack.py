@@ -22,7 +22,7 @@ class InvokeYOLOLambdaCdkStack(Stack):
         scope: Construct,
         construct_id: str,
         config: dict,
-        vpc_and_rds_with_secrets_stack=None,
+        vpc_stack=None,
         bedrock_inference_profile_stack=None,
         table_dynamodb_stack=None,
         lambda_layers_stack=None,
@@ -98,11 +98,9 @@ class InvokeYOLOLambdaCdkStack(Stack):
                 "ANNOTATED_BUCKET": "uniben-planogram-test",
                 "DEFAULT_REGION": "ap-southeast-1",
             },
-            vpc=vpc_and_rds_with_secrets_stack.vpc,
-            vpc_subnets=ec2.SubnetSelection(
-                subnets=[vpc_and_rds_with_secrets_stack.selected_subnet]
-            ),
-            security_groups=[vpc_and_rds_with_secrets_stack.lambda_security_group],
+            vpc=vpc_stack.vpc,
+            vpc_subnets=ec2.SubnetSelection(subnets=[vpc_stack.selected_subnet]),
+            security_groups=[vpc_stack.lambda_security_group],
             allow_public_subnet=True,
             description="Invoke YOLO",
         )
