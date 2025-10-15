@@ -26,7 +26,8 @@ class BedrockInferenceProfileStack(Stack):
                     "inferenceProfileName": self.profile_name,
                     "description": "Claude Inference Profile",
                     "modelSource": {
-                        "copyFrom": "arn:aws:bedrock:ap-southeast-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0"
+                        # "copyFrom": "arn:aws:bedrock:ap-southeast-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0"
+                        "copyFrom": self.stack_config.get("model", "")
                     },
                 },
                 physical_resource_id=cr.PhysicalResourceId.of(self.profile_name),

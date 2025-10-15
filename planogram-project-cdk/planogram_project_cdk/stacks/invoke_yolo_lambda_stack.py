@@ -23,8 +23,10 @@ class InvokeYOLOLambdaCdkStack(Stack):
         construct_id: str,
         config: dict,
         vpc_and_rds_with_secrets_stack=None,
+        bedrock_inference_profile_stack=None,
+        table_dynamodb_stack=None,
         lambda_layers_stack=None,
-        **kwargs
+        **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
         self.stack_config = config["invoke_yolo_lambda_cdk_stack"]
@@ -90,9 +92,9 @@ class InvokeYOLOLambdaCdkStack(Stack):
             role=self.invoke_yolo_lambda_role,
             layers=[self.opencv_layer],
             environment={
-                "DB_NAME": "PlanogramResultTable",
-                "ML_ENDPOINT": "_",
-                "INFERENCE_PROFILE": "arn:aws:bedrock:ap-southeast-1:151182331915:application-inference-profile/yxyw9vn97ihj",
+                "DB_NAME": f"{table_dynamodb_stack.table.table_name}",
+                "ML_ENDPOINT": "REPLACE_THIS",
+                "INFERENCE_PROFILE": f"{bedrock_inference_profile_stack.profileARN}",
                 "ANNOTATED_BUCKET": "uniben-planogram-test",
             },
             vpc=vpc_and_rds_with_secrets_stack.vpc,

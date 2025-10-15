@@ -38,6 +38,28 @@ vpc_and_rds_with_secrets_stack = VpcAndRdsWithSecretsStack(
     env=env,
 )
 
+s3_bucket_stack = S3BucketCdkStack(
+    app,
+    "S3BucketCdkStack",
+    config=config,
+    env=env,
+)
+
+bedrock_inference_profile_stack = BedrockInferenceProfileStack(
+    app,
+    "BedrockInferenceProfileCdkStack",
+    config=config,
+    env=env,
+)
+
+table_dynamodb_stack = DynamoDbStack(
+    app,
+    "DynamoDBCdkStack",
+    config=config,
+    env=env,
+    invoke_yolo_lambda_stack=source_bucket_and_invoke_yolo_lambda_stack,
+)
+
 lambda_layers_stack = LambdaLayersStack(
     app,
     "LambdaLayersCDKStack",
@@ -75,33 +97,14 @@ source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
     env=env,
     lambda_layers_stack=lambda_layers_stack,
     vpc_and_rds_with_secrets_stack=vpc_and_rds_with_secrets_stack,
+    bedrock_inference_profile_stack=bedrock_inference_profile_stack,
+    table_dynamodb_stack=table_dynamodb_stack,
 )
 
-table_dynamodb_stack = DynamoDbStack(
-    app,
-    "DynamoDBCdkStack",
-    config=config,
-    env=env,
-    invoke_yolo_lambda_stack=source_bucket_and_invoke_yolo_lambda_stack,
-)
 
 # source_bucket_and_invoke_yolo_lambda_stack.add_dependency(
 #     vpc_and_rds_with_secrets_stack
 # )
-
-s3_bucket_stack = S3BucketCdkStack(
-    app,
-    "S3BucketCdkStack",
-    config=config,
-    env=env,
-)
-
-bedrock_inference_profile_stack = BedrockInferenceProfileStack(
-    app,
-    "BedrockInferenceProfileCdkStack",
-    config=config,
-    env=env,
-)
 
 
 for stack in [
@@ -112,7 +115,7 @@ for stack in [
     create_endpoint_lambda_stack,
     source_bucket_and_invoke_yolo_lambda_stack,
     s3_bucket_stack,
-    bedrock_inference_profile_stack,
+    # bedrock_inference_profile_stack,
     table_dynamodb_stack,
 ]:
     cdk.Tags.of(stack).add("project", "planogram")

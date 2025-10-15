@@ -42,7 +42,10 @@ class ExportAnnotationsLambdaCdkStack(Stack):
             ephemeral_storage_size=Size.mebibytes(512),
             role=self.export_annotations_lambda_role,
             environment={
-                "S3_MODEL_BUCKET": "s3://uniben-planogram-training/tranining-model",
+                "LS_PROJECT_ID": "13",
+                "LS_SECRET_NAME": "label-studio-config",
+                "S3_BUCKET": "uniben-planogram-training",
+                "S3_PREFIX": "labeled-image",
             },
             description="Export Annotations from Label Studio",
         )
