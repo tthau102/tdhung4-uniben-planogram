@@ -96,6 +96,7 @@ class InvokeYOLOLambdaCdkStack(Stack):
                 "ML_ENDPOINT": "REPLACE_THIS",
                 "INFERENCE_PROFILE": f"{bedrock_inference_profile_stack.profileARN}",
                 "ANNOTATED_BUCKET": "uniben-planogram-test",
+                "DEFAULT_REGION": "ap-southeast-1",
             },
             vpc=vpc_and_rds_with_secrets_stack.vpc,
             vpc_subnets=ec2.SubnetSelection(
