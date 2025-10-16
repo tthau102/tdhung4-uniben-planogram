@@ -45,6 +45,13 @@ s3_bucket_stack = S3BucketCdkStack(
     env=env,
 )
 
+table_dynamodb_stack = DynamoDbStack(
+    app,
+    "DynamoDBCdkStack",
+    config=config,
+    env=env,
+)
+
 bedrock_inference_profile_stack = BedrockInferenceProfileStack(
     app,
     "BedrockInferenceProfileCdkStack",
@@ -52,13 +59,6 @@ bedrock_inference_profile_stack = BedrockInferenceProfileStack(
     env=env,
 )
 
-table_dynamodb_stack = DynamoDbStack(
-    app,
-    "DynamoDBCdkStack",
-    config=config,
-    env=env,
-    invoke_yolo_lambda_stack=source_bucket_and_invoke_yolo_lambda_stack,
-)
 
 lambda_layers_stack = LambdaLayersStack(
     app,
@@ -100,6 +100,12 @@ source_bucket_and_invoke_yolo_lambda_stack = InvokeYOLOLambdaCdkStack(
     bedrock_inference_profile_stack=bedrock_inference_profile_stack,
     table_dynamodb_stack=table_dynamodb_stack,
 )
+
+# print(source_bucket_and_invoke_yolo_lambda_stack)
+
+# table_dynamodb_stack.add_resource_based_policy(
+#     invoke_yolo_lambda_role_arn=source_bucket_and_invoke_yolo_lambda_stack.invoke_yolo_lambda_role.role_arn
+# )
 
 
 # source_bucket_and_invoke_yolo_lambda_stack.add_dependency(

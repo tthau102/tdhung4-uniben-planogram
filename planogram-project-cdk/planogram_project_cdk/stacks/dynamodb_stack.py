@@ -19,7 +19,6 @@ class DynamoDbStack(Stack):
         scope: Construct,
         construct_id: str,
         config: dict,
-        invoke_yolo_lambda_stack=None,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -35,14 +34,27 @@ class DynamoDbStack(Stack):
             removal_policy=RemovalPolicy.DESTROY,  # RETAIN
         )
 
+        CfnOutput(
+            self,
+            "TableName",
+            value=self.table.table_name,
+            description="DynamoDB Table Name",
+        )
+
+        CfnOutput(
+            self,
+            "TableArn",
+            value=self.table.table_arn,
+            description="DynamoDB Table ARN",
+        )
+
+    def add_resource_based_policy(invoke_yolo_lambda_role_arn):
         policy_document = {
             "Version": "2012-10-17",
             "Statement": [
                 {
                     "Effect": "Allow",
-                    "Principal": {
-                        "AWS": f"{invoke_yolo_lambda_stack.invoke_yolo_lambda_role.role_arn}"
-                    },
+                    "Principal": {"AWS": f"{invoke_yolo_lambda_role_arn}"},
                     "Action": [
                         "dynamodb:GetItem",
                         "dynamodb:PutItem",
@@ -100,17 +112,3 @@ class DynamoDbStack(Stack):
 
         # Ensure policy is attached after table is created
         policy_attachment.node.add_dependency(self.table)
-
-        CfnOutput(
-            self,
-            "TableName",
-            value=self.table.table_name,
-            description="DynamoDB Table Name",
-        )
-
-        CfnOutput(
-            self,
-            "TableArn",
-            value=self.table.table_arn,
-            description="DynamoDB Table ARN",
-        )

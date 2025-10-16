@@ -31,21 +31,50 @@ class InvokeYOLOLambdaCdkStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
         self.stack_config = config["invoke_yolo_lambda_cdk_stack"]
 
-        self.source_bucket = s3.Bucket(
+        self.test_bucket = s3.Bucket(
             self,
-            "planogram_source_bucket",
+            "planogram_test",
             versioned=False,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
-            # block_public_access=s3.BlockPublicAccess.BLOCK_ALL
         )
 
         s3_deployment.BucketDeployment(
             self,
-            "CreateImageFolder",
-            destination_bucket=self.source_bucket,
-            sources=[s3_deployment.Source.data("images/.keep", "")],
+            "CreateAnnotatedImageFolder",
+            destination_bucket=self.test_bucket,
+            sources=[s3_deployment.Source.data("annotated-images/.keep", "")],
         )
+
+        s3_deployment.BucketDeployment(
+            self,
+            "CreateTestImageFolder",
+            destination_bucket=self.test_bucket,
+            sources=[s3_deployment.Source.data("test-images/.keep", "")],
+        )
+
+        s3_deployment.BucketDeployment(
+            self,
+            "CreateProdImageFolder",
+            destination_bucket=self.test_bucket,
+            sources=[s3_deployment.Source.data("prod-images/.keep", "")],
+        )
+
+        # self.source_bucket = s3.Bucket(
+        #     self,
+        #     "planogram_source_bucket",
+        #     versioned=False,
+        #     removal_policy=RemovalPolicy.DESTROY,
+        #     auto_delete_objects=True,
+        #     # block_public_access=s3.BlockPublicAccess.BLOCK_ALL
+        # )
+
+        # s3_deployment.BucketDeployment(
+        #     self,
+        #     "CreateImageFolder",
+        #     destination_bucket=self.source_bucket,
+        #     sources=[s3_deployment.Source.data("images/.keep", "")],
+        # )
 
         self.invoke_yolo_lambda_role = iam.Role(
             self,
@@ -106,13 +135,13 @@ class InvokeYOLOLambdaCdkStack(Stack):
         )
 
         # Grant Lambda permissions to read/write S3 bucket
-        self.source_bucket.grant_read_write(self.invoke_yolo_function)
+        self.test_bucket.grant_read_write(self.invoke_yolo_function)
 
         # Add S3 trigger to Lambda
-        self.source_bucket.add_event_notification(
+        self.test_bucket.add_event_notification(
             s3.EventType.OBJECT_CREATED,
             s3n.LambdaDestination(self.invoke_yolo_function),
-            s3.NotificationKeyFilter(prefix="images/", suffix=".jpg"),
+            s3.NotificationKeyFilter(prefix="prod-images/", suffix=".jpg"),
         )
 
         # Create Elastic IP for Lambda ENI
@@ -129,9 +158,16 @@ class InvokeYOLOLambdaCdkStack(Stack):
 
         CfnOutput(
             self,
-            "BucketName",
-            value=self.source_bucket.bucket_name,
-            description="S3 Bucket Name",
+            "TestBucketName",
+            value=self.test_bucket.bucket_name,
+            description="",
+        )
+
+        CfnOutput(
+            self,
+            "TestBucketArn",
+            value=self.test_bucket.bucket_arn,
+            description="",
         )
 
         CfnOutput(

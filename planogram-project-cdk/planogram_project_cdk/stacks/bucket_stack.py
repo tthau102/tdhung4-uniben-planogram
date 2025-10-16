@@ -22,31 +22,9 @@ class S3BucketCdkStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
         self.stack_config = config["s3_bucket_cdk_stack"]
 
-        # self.training_bucket = s3.Bucket(
-        #     self,
-        #     "planogram_training",
-        #     versioned=False,
-        #     removal_policy=RemovalPolicy.DESTROY,
-        #     auto_delete_objects=True,
-        # )
-
-        # s3_deployment.BucketDeployment(
-        #     self,
-        #     "CreateTrainingModelFolder",
-        #     destination_bucket=self.training_bucket,
-        #     sources=[s3_deployment.Source.data("tranining-model/.keep", "")],
-        # )
-
-        # s3_deployment.BucketDeployment(
-        #     self,
-        #     "CreateLabeledImageFolder",
-        #     destination_bucket=self.training_bucket,
-        #     sources=[s3_deployment.Source.data("labeled-image/.keep", "")],
-        # )
-
-        self.test_bucket = s3.Bucket(
+        self.training_bucket = s3.Bucket(
             self,
-            "planogram_test",
+            "planogram_training",
             versioned=False,
             removal_policy=RemovalPolicy.DESTROY,
             auto_delete_objects=True,
@@ -54,42 +32,28 @@ class S3BucketCdkStack(Stack):
 
         s3_deployment.BucketDeployment(
             self,
-            "CreateAnnotatedImageFolder",
-            destination_bucket=self.test_bucket,
-            sources=[s3_deployment.Source.data("annotated-images/.keep", "")],
+            "CreateTrainingModelFolder",
+            destination_bucket=self.training_bucket,
+            sources=[s3_deployment.Source.data("tranining-model/.keep", "")],
         )
 
         s3_deployment.BucketDeployment(
             self,
-            "CreateTestImageFolder",
-            destination_bucket=self.test_bucket,
-            sources=[s3_deployment.Source.data("test-images/.keep", "")],
+            "CreateLabeledImageFolder",
+            destination_bucket=self.training_bucket,
+            sources=[s3_deployment.Source.data("labeled-image/.keep", "")],
         )
-
-        # CfnOutput(
-        #     self,
-        #     "TrainingBucketName",
-        #     value=self.training_bucket.bucket_name,
-        #     description="",
-        # )
-
-        # CfnOutput(
-        #     self,
-        #     "TrainingBucketArn",
-        #     value=self.training_bucket.bucket_arn,
-        #     description="",
-        # )
 
         CfnOutput(
             self,
-            "TestBucketName",
-            value=self.test_bucket.bucket_name,
+            "TrainingBucketName",
+            value=self.training_bucket.bucket_name,
             description="",
         )
 
         CfnOutput(
             self,
-            "TestBucketArn",
-            value=self.test_bucket.bucket_arn,
+            "TrainingBucketArn",
+            value=self.training_bucket.bucket_arn,
             description="",
         )
