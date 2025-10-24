@@ -39,27 +39,6 @@ class InvokeYOLOLambdaCdkStack(Stack):
             auto_delete_objects=True,
         )
 
-        s3_deployment.BucketDeployment(
-            self,
-            "CreateAnnotatedImageFolder",
-            destination_bucket=self.test_bucket,
-            sources=[s3_deployment.Source.data("annotated-images/.keep", "")],
-        )
-
-        s3_deployment.BucketDeployment(
-            self,
-            "CreateTestImageFolder",
-            destination_bucket=self.test_bucket,
-            sources=[s3_deployment.Source.data("test-images/.keep", "")],
-        )
-
-        s3_deployment.BucketDeployment(
-            self,
-            "CreateProdImageFolder",
-            destination_bucket=self.test_bucket,
-            sources=[s3_deployment.Source.data("prod-images/.keep", "")],
-        )
-
         # self.source_bucket = s3.Bucket(
         #     self,
         #     "planogram_source_bucket",
@@ -67,13 +46,6 @@ class InvokeYOLOLambdaCdkStack(Stack):
         #     removal_policy=RemovalPolicy.DESTROY,
         #     auto_delete_objects=True,
         #     # block_public_access=s3.BlockPublicAccess.BLOCK_ALL
-        # )
-
-        # s3_deployment.BucketDeployment(
-        #     self,
-        #     "CreateImageFolder",
-        #     destination_bucket=self.source_bucket,
-        #     sources=[s3_deployment.Source.data("images/.keep", "")],
         # )
 
         self.invoke_yolo_lambda_role = iam.Role(
@@ -124,7 +96,7 @@ class InvokeYOLOLambdaCdkStack(Stack):
                 "DB_NAME": f"{table_dynamodb_stack.table.table_name}",
                 "ML_ENDPOINT": "REPLACE_THIS",
                 "INFERENCE_PROFILE": f"{bedrock_inference_profile_stack.profileARN}",
-                "ANNOTATED_BUCKET": "uniben-planogram-test",
+                "ANNOTATED_BUCKET": f"{self.test_bucket.bucket_name}",
                 "DEFAULT_REGION": "ap-southeast-1",
             },
             vpc=vpc_stack.vpc,
@@ -155,6 +127,27 @@ class InvokeYOLOLambdaCdkStack(Stack):
         #         {"key": "Function", "value": self.invoke_yolo_function.function_name},
         #     ],
         # )
+
+        s3_deployment.BucketDeployment(
+            self,
+            "CreateTestImageFolder",
+            destination_bucket=self.test_bucket,
+            sources=[s3_deployment.Source.data("test-images/.keep1", "")],
+        )
+
+        s3_deployment.BucketDeployment(
+            self,
+            "CreateProdImageFolder",
+            destination_bucket=self.test_bucket,
+            sources=[s3_deployment.Source.data("prod-images/.keep2", "")],
+        )
+
+        s3_deployment.BucketDeployment(
+            self,
+            "CreateAnnotatedImageFolder",
+            destination_bucket=self.test_bucket,
+            sources=[s3_deployment.Source.data("annotated-images/.keep3", "")],
+        )
 
         CfnOutput(
             self,

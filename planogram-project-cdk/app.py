@@ -87,6 +87,7 @@ create_endpoint_lambda_stack = CreateEndpointLambdaCdkStack(
     config=config,
     lambda_layers_stack=lambda_layers_stack,
     env=env,
+    s3_bucket_stack=s3_bucket_stack,
 )
 
 

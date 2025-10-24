@@ -18,6 +18,7 @@ class CreateEndpointLambdaCdkStack(Stack):
         construct_id: str,
         config: dict,
         lambda_layers_stack=None,
+        s3_bucket_stack=None,
         **kwargs,
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
@@ -73,7 +74,7 @@ class CreateEndpointLambdaCdkStack(Stack):
             role=self.create_endpoint_lambda_role,
             layers=[self.sagemaker_layer],
             environment={
-                "S3_MODEL_BUCKET": "s3://uniben-planogram-training/tranining-model",
+                "S3_MODEL_BUCKET": f"s3://{s3_bucket_stack.training_bucket.bucket_name}/tranining-model",
                 "ENDPOINT_ROLE": f"{self.endpoint_role.role_arn}",
             },
             description="Create Endpoint on Amazon SageMaker",
