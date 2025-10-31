@@ -1,0 +1,48 @@
+{
+  "project": {
+    "name": "planogram",
+    "version": "1.0.0"
+  },
+  "aws": {
+    "region": "ap-southeast-1",
+    "profile": "default"
+  },
+  "database": {},
+  "lambda": {
+    "runtime": "python3.9",
+    "timeout": 300,
+    "memory_size": 512
+  },
+  "s3": {
+    "bucket_prefix": "planogram-project",
+    "versioning": true
+  },
+  "bedrock": {
+    "model_id": "anthropic.claude-3-sonnet-20240229-v1:0",
+    "inference_profile_name": "planogram-inference-profile"
+  },
+  "vpc_cdk_stack": {
+    "vpc_name": "planogram-VPC",
+    "cidr": "10.15.0.0/16"
+  },
+  "export_annotations_lambda_cdk_stack": {},
+  "create_training_job_lambda_cdk_stack": {},
+  "create_endpoint_lambda_cdk_stack": {},
+  "invoke_yolo_lambda_cdk_stack": {},
+  "dynamo_db_cdk_stack": {},
+  "s3_bucket_cdk_stack": {},
+  "bedrock_inference_profile_cdk_stack": {
+    "model": "arn:aws:bedrock:ap-southeast-1::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0"
+  },
+  "lambda_layers_cdk_stack": {
+    "opencv_layer_bucket_name": "cmc-planogram-lambda-layer",
+    "opencv_layer_s3_key": "opencv.zip",
+    "opencv_layer_name": "planogram_opencv",
+    "sagemaker_layer_bucket_name": "cmc-planogram-lambda-layer",
+    "sagemaker_layer_s3_key": "sagemaker.zip",
+    "sagemaker_layer_name": "planogram_sagemaker"
+  },
+  "tags": {
+    "project": "planogram"
+  }
+}

@@ -63,6 +63,18 @@ class CreateTrainingJobLambdaCdkStack(Stack):
             self.create_training_job_lambda_role
         )
 
+        self.create_training_job_role = iam.Role(
+            self,
+            "create_training_job-role",
+            assumed_by=iam.ServicePrincipal("sagemaker.amazonaws.com"),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(
+                    "AmazonSageMakerFullAccess"
+                ),
+                iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3FullAccess"),
+            ],
+        )
+
         self.create_training_job_function = lambda_.Function(
             self,
             "create_training_job",
@@ -74,9 +86,9 @@ class CreateTrainingJobLambdaCdkStack(Stack):
             ephemeral_storage_size=Size.mebibytes(512),
             role=self.create_training_job_lambda_role,
             environment={
-                "SAGEMAKER_ROLE_ARN": "arn:aws:iam::151182331915:role/training_job_role",
-                "ECR_IMAGE_URI": "151182331915.dkr.ecr.ap-southeast-1.amazonaws.com/yolo11-training:latest",
-                # "REGION": Stack.of(self).region,
+                "SAGEMAKER_ROLE_ARN": f"{self.create_training_job_role.role_arn}",
+                "ECR_IMAGE_URI": "REPLACE_THIS",
+                # "ECR_IMAGE_URI": "151182331915.dkr.ecr.ap-southeast-1.amazonaws.com/yolo11-training:latest",
             },
             description="Create YOLO11x Training job on Amazon SageMaker",
         )
